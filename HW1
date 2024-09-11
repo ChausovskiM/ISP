@@ -1,5 +1,3 @@
-import numpy as np
-
 # Данные задачи
 V_poor = float(input())       # доход при плохих условиях
 V_good = float(input())      # доход при хороших условиях
