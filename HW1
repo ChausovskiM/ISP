@@ -1,0 +1,73 @@
+import numpy as np
+
+# Данные задачи
+V_poor = float(input())       # доход при плохих условиях
+V_good = float(input())      # доход при хороших условиях
+V_excellent = float(input())  # доход при отличных условиях
+cost_drilling = float(input())  # стоимость бурения
+cost_research = float(input())   # стоимость исследования
+
+#ввод таблицы данных
+research_table = []
+for i in range(3):
+    row = list(map(int, input()))
+    research_table.append(row)
+
+total_cases_poor = research_table[0].sum()
+total_cases_good = research_table[1].sum()
+total_cases_excellent = research_table[2].sum()
+total_cases = total_cases_poor + total_cases_good + total_cases_excellent
+
+
+#СЛУЧАЙ ИССЛЕДОВАНИЯ
+
+
+# Суммы по строкам - вероятности разных заключений исследований
+P_research_poor = total_cases_poor / total_cases
+P_research_good = total_cases_good / total_cases
+P_research_excellent = total_cases_excellent / total_cases
+# Условные вероятности реальных условий для каждого заключения
+P_poor_given_research_poor = research_table[0, 0] / total_cases_poor
+P_good_given_research_poor = research_table[0, 1] / total_cases_poor
+P_excellent_given_research_poor = research_table[0, 2] / total_cases_poor
+P_poor_given_research_good = research_table[1, 0] / total_cases_good
+P_good_given_research_good = research_table[1, 1] / total_cases_good
+P_excellent_given_research_good = research_table[1, 2] / total_cases_good
+P_poor_given_research_excellent = research_table[2, 0] / total_cases_excellent
+P_good_given_research_excellent = research_table[2, 1] / total_cases_excellent
+P_excellent_given_research_excellent = research_table[2, 2] / total_cases_excellent
+
+# Математическое ожидание доходов для каждого результата исследования
+# Вычисляем только в том случае, если доход больше стоимости бурения
+# 1. Плохое заключение
+profit_poor = (V_poor - cost_drilling) if V_poor > cost_drilling else 0
+# 2. Хорошее заключение
+profit_good = (V_good - cost_drilling) if V_good > cost_drilling else 0
+# 3. Отличное заключение
+profit_excellent = (V_excellent - cost_drilling) if V_excellent > cost_drilling else 0
+# Общее математическое ожидание с учетом отказов
+E_V_research = P_research_poor * E_V_given_research_poor + P_research_good * E_V_given_research_good + P_research_excellent * E_V_given_research_excellent
+# Чистая выгода с учетом затрат на исследования
+E_V_final_research = (E_V_research - cost_research) if E_V_research > cost_research else 0
+
+
+#СЛУЧАЙ НЕИССЛЕДОВАНИЯ
+
+
+E_V_final_noresearch = E_V_noresearch
+
+
+# Определение прибыли и VOI
+E_V_final = E_V_final_research if E_V_final_research > E_V_final_noresearch else E_V_final_noresearch
+VOI = abs(E_V_research - E_V_noresearch)
+
+
+#Определение действий
+drilling_flag = 'Бурим' if E_V_final > 0 else 'Не бурим'
+logging_flag = 'Исследуем' if E_V_final_research > E_V_final_noresearch else 'Не исследуем'
+
+# Вывод результата
+print(f"Ожидаемая выгода: {E_V_final:.2f} млн руб.")
+print(f"Стоимость информации: {VOI:.2f} млн руб.")
+print(f"{logging_flag}")
+print(f"{drilling_flag}")
